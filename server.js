@@ -420,4 +420,3 @@ http.createServer(function (request, response)
 	}).listen(process.env.VCAP_APP_PORT || 8888);
 
 util.puts("Server running");
-
