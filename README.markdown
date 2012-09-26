@@ -1,4 +1,4 @@
-# regexplanet-js
+# regexplanet-xregexp
 
 This is the XRegExp backend for RegexPlanet, a tool for online regular expression testing.
 
