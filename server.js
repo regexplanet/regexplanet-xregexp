@@ -55,6 +55,37 @@ function getStatus()
 	return retVal;
 }
 
+function parseParams(query)
+{
+	var params = {};
+	if (query != null && query.length > 0)
+	{
+		var pairs = query.split("&");
+		for (var loop = 0; loop < pairs.length; loop++)
+		{
+			var kv = pairs[loop].split('=');
+			if (kv && kv.length == 2)
+			{
+				if (kv[0] in params)
+				{
+					params[kv[0]].push(querystring.unescape(kv[1].replace(/\+/g, " ")));
+				}
+				else
+				{
+					params[kv[0]] = [ querystring.unescape(kv[1].replace(/\+/g, " ")) ];
+				}
+			}
+			else
+			{
+				//LATER: do something?
+			}
+		}
+	}
+
+	return params;
+}
+
+
 function redirect(response, location)
 {
 	response.writeHead(302, {"Content-Type": "text/plain", "Location" : location});
@@ -82,10 +113,28 @@ function serveFile(response, contentType, fileName)
 		});
 }
 
-function serveStatus(response)
+function serveStatus(query, response)
 {
-	response.writeHead(200, {"Content-Type": "text/plain"});
-	response.write(JSON.stringify(getStatus()));
+	response.writeHead(200, {
+			"Content-Type": "text/plain",
+			'Access-Control-Allow-Origin': '*',
+			'Access-Control-Allow-Methods': 'POST, GET',
+			'Access-Control-Max-Age': '604800',
+		});
+
+	var params = parseParams(query);
+
+	if ('callback' in params)
+	{
+		response.write(params['callback'][0]);
+		response.write("(");
+		response.write(JSON.stringify(getStatus()));
+		response.write(")");
+	}
+	else
+	{
+		response.write(JSON.stringify(getStatus()));
+	}
 	response.end();
 }
 
@@ -128,27 +177,7 @@ function serveTest(query, response)
 
 	try
 	{
-		var params = {};
-		var pairs = query.split("&");
-		for (var loop = 0; loop < pairs.length; loop++)
-		{
-			var kv = pairs[loop].split('=');
-			if (kv && kv.length == 2)
-			{
-				if (kv[0] in params)
-				{
-					params[kv[0]].push(querystring.unescape(kv[1].replace(/\+/g, " ")));
-				}
-				else
-				{
-					params[kv[0]] = [ querystring.unescape(kv[1].replace(/\+/g, " ")) ];
-				}
-			}
-			else
-			{
-				//LATER: do something?
-			}
-		}
+		var params = parseParams(query);
 
 		retVal["params"] = JSON.stringify(params);
 
@@ -401,7 +430,7 @@ http.createServer(function (request, response)
 		}
 		else if (parsedUrl.pathname == '/status.json')
 		{
-			serveStatus(response);
+			serveStatus(parsedUrl.query, response);
 		}
 		else if (parsedUrl.pathname == '/robots.txt')
 		{
