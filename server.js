@@ -32,6 +32,7 @@ function getStatus()
 	retVal["__filename"] = __filename;
 	retVal["os.hostname"] = os.hostname();
 	retVal["os.type"] = os.type();
+	retVal["timestamp"] = new Date().getTime();
 	//retVal["os.platform"] = os.platform();
 	/*retVal["os.arch"] = os.arch();
 	retVal["os.release"] = os.release();
