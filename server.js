@@ -29,14 +29,15 @@ function getStatus()
 	var retVal = {}
 
 	retVal["success"] = true;
+	retVal["version"] = XRegExp.version;
 	retVal["__filename"] = __filename;
 	retVal["os.hostname"] = os.hostname();
 	retVal["os.type"] = os.type();
 	retVal["timestamp"] = new Date().getTime();
-	//retVal["os.platform"] = os.platform();
-	/*retVal["os.arch"] = os.arch();
+	retVal["os.platform"] = os.platform();
+	retVal["os.arch"] = os.arch();
 	retVal["os.release"] = os.release();
-	retVal["os.uptime"] = os.uptime();
+	/*retVal["os.uptime"] = os.uptime();
 	retVal["os.loadavg"] = os.loadavg();
 	retVal["os.totalmem"] = os.totalmem();
 	retVal["os.freemem"] = os.freemem();
