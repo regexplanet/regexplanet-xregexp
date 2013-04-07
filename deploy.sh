@@ -1,5 +1,7 @@
 #!/bin/bash
 #
-# deploy the js backend to cloundno.de
+# deploy the js backend to appfog
 #
-git push cloudnode master
+# NOTE: you may need to run af login first
+#
+af update regexplanet-xregexp
