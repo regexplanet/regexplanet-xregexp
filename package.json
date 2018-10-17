@@ -1,5 +1,17 @@
 {
-	"name":"regexplanet-xregexp",
-	"version":"0.0.1",
-	"dependencies": {}
+  "name": "regexplanet-xregexp",
+  "version": "0.0.1",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.15.4"
+  },
+  "engines": {
+    "node": "8.1.4"
+  },
+  "repository": {
+    "url": "https://www.github.com/fileformat/regexplanet-xregexp"
+  }
 }

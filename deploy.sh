@@ -1,7 +1,17 @@
 #!/bin/bash
 #
-# deploy the js backend to appfog
+# deploy the xregexp backend to zeit
 #
-# NOTE: you may need to run af login first
+
+
+echo "INFO: listing existing versions"
+now ls regexplanet-xregexp
+
+echo "INFO: deploying"
+now && now alias
+
 #
-af update regexplanet-xregexp
+# need to kill the old version!
+#
+echo "INFO: removing the old version "
+echo "WARNING: must be done manually with 'now rm'"

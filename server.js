@@ -49,7 +49,7 @@ function getStatus()
 	retVal["process.execPath"] = process.execPath;
 	retVal["process.memoryUsage"] = process.memoryUsage();
 	retVal["process.platform"] = process.platform;
-	retVal["process.uptime"] = process.uptime;
+	retVal["process.uptime"] = process.uptime();
 	retVal["process.version"] = process.versions;
 	retVal["process.versions"] = process.versions;
 	retVal["process.installPrefix"] = process.installPrefix;
