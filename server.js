@@ -30,10 +30,13 @@ function getStatus()
 
 	retVal["success"] = true;
 	retVal["version"] = XRegExp.version;
+    retVal["timestamp"] = new Date().toISOString();
+    retVal["lastmod"] = process.env['LASTMOD'] || '(not set)';
+    retVal["commit"] = process.env['COMMIT'] || '(not set)';
+    retVal["tech"] = "NodeJS " + process.version;
 	retVal["__filename"] = __filename;
 	retVal["os.hostname"] = os.hostname();
 	retVal["os.type"] = os.type();
-	retVal["timestamp"] = new Date().getTime();
 	retVal["os.platform"] = os.platform();
 	retVal["os.arch"] = os.arch();
 	retVal["os.release"] = os.release();
@@ -448,6 +451,10 @@ http.createServer(function (request, response)
 		{
 			serveFile(response, {"Content-Type": "image/x-icon"}, "favicon.ico");
 		}
+        else if (parsedUrl.pathname == '/favicon.svg')
+        {
+            serveFile(response, {"Content-Type": "image/svg+xml"}, "favicon.svg");
+        }
 		else if (parsedUrl.pathname == '/' || parsedUrl.pathname.lastIndexOf('/index.', 0) === 0 || parsedUrl.pathname.lastIndexOf('/default.', 0) === 0)
 		{
 			redirect(response, "http://www.regexplanet.com/advanced/xregexp/index.html");
