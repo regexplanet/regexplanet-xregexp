@@ -468,4 +468,4 @@ http.createServer(function (request, response)
 
 	}).listen(port);
 
-util.puts("Server running on port " + port);
+console.log("Server running on port " + port);
