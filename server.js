@@ -379,6 +379,18 @@ function serveTest(query, response)
 							html.push(result[capture] == null ? "<i>(null)</i>" : h(result[capture]));
 							html.push("<br/>");
 						}
+						if (result.groups) {
+							var captureNames = Object.keys(result.groups);
+							for (var namedCapture = 0; namedCapture < captureNames.length; namedCapture++)
+							{
+								var key = captureNames[namedCapture];
+								html.push("groups.");
+								html.push(key);
+								html.push(": ");
+								html.push(result.groups[key] == null ? "<i>(null)</i>" : h(result.groups[key]));
+								html.push("<br/>");
+							}
+						}
 						html.push("</td>\n");
 
 						html.push('\t\t\t<td>');
