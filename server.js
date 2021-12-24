@@ -6,8 +6,6 @@ var util = require("util");
 var url = require("url");
 var XRegExp = require('./xregexp-all.js');
 
-XRegExp.install('natives');
-
 function h(unsafe)
 {
 	if (unsafe == null)
@@ -267,7 +265,7 @@ function serveTest(query, response)
 
 		try
 		{
-			compileTest = new XRegExp(str_regex, str_options);
+			compileTest = XRegExp(str_regex, str_options);
 		}
 		catch (err)
 		{
@@ -278,7 +276,7 @@ function serveTest(query, response)
 			html.push('</td>\n');
 			html.push('\t</tr>\n');
 			html.push('</table>\n');
-			response.write(JSON.stringify({"success": false, "message": "unable to create XRegExp  object", "html": html.join("")}));
+			response.write(JSON.stringify({"success": false, "message": "Unable to create XRegExp object: " + err.message, "html": html.join("")}));
 			response.end();
 			return;
 		}
@@ -290,11 +288,11 @@ function serveTest(query, response)
 		html.push("\t\t<tr>\n");
 		html.push("\t\t\t<th style=\"text-align:center;\">Test</th>\n");
 		html.push("\t\t\t<th>Input</th>");
-		html.push("\t\t\t<th>input.replace()</th>");
-		html.push("\t\t\t<th>input.split()[]</th>");
-		html.push("\t\t\t<th>regex.test()</th>");
-		html.push("\t\t\t<th>regex.exec().index</th>");
-		html.push("\t\t\t<th>regex.exec()[]</th>");
+		html.push("\t\t\t<th>XRegExp.replace()</th>");
+		html.push("\t\t\t<th>XRegExp.split()[]</th>");
+		html.push("\t\t\t<th>XRegExp.test()</th>");
+		html.push("\t\t\t<th>XRegExp.exec().index</th>");
+		html.push("\t\t\t<th>XRegExp.exec()[]</th>");
 		html.push("\t\t\t<th>regex.lastIndex</th>");
 		html.push("\t\t</tr>\n");
 		html.push("\t</thead>\n");
@@ -325,11 +323,11 @@ function serveTest(query, response)
 				html.push("</td>\n");
 
 				html.push('\t\t\t<td>');
-				html.push(h(input.replace(new XRegExp(str_regex, str_options), replacement == null ? "" : replacement)));
+				html.push(h(XRegExp.replace(input, XRegExp(str_regex, str_options), replacement == null ? "" : replacement)));
 				html.push("</td>\n");
 
 				html.push('\t\t\t<td>');
-				var splits = input.split(new XRegExp( str_regex, str_options));
+				var splits = XRegExp.split(input, XRegExp(str_regex, str_options));
 				for (var split = 0; split < splits.length; split++)
 				{
 					html.push("[");
@@ -341,11 +339,11 @@ function serveTest(query, response)
 				html.push("</td>\n");
 
 				html.push('\t\t\t<td>');
-				html.push(new XRegExp(str_regex, str_options).test(input) ? "true" : "false");	// can't use the same object twice
+				html.push(XRegExp.test(input, XRegExp(str_regex, str_options)) ? "true" : "false");
 				html.push("</td>\n");
 
-				var regex = new XRegExp(str_regex, str_options);
-				var result = regex.exec(input);
+				var regex = XRegExp(str_regex, str_options);
+				var result = XRegExp.exec(input, regex);
 				if (result == null)
 				{
 					html.push('\t\t\t<td colspan="6"><i>(null)</i></td>\n');
@@ -364,7 +362,7 @@ function serveTest(query, response)
 						{
 							html.push("</tr>\n");
 							html.push('\t\t\t<td colspan="5" style="text-align:right;">');
-							html.push("regex.exec()");
+							html.push("XRegExp.exec()");
 							html.push("</td>\n");
 						}
 
@@ -381,13 +379,28 @@ function serveTest(query, response)
 							html.push(result[capture] == null ? "<i>(null)</i>" : h(result[capture]));
 							html.push("<br/>");
 						}
+						if (result.groups) {
+							var captureNames = Object.keys(result.groups);
+							for (var namedCapture = 0; namedCapture < captureNames.length; namedCapture++)
+							{
+								var key = captureNames[namedCapture];
+								html.push("groups.");
+								html.push(key);
+								html.push(": ");
+								html.push(result.groups[key] == null ? "<i>(null)</i>" : h(result.groups[key]));
+								html.push("<br/>");
+							}
+						}
 						html.push("</td>\n");
 
 						html.push('\t\t\t<td>');
 						html.push(regex.lastIndex);
 						html.push("</td>\n");
 
-						result = global ? regex.exec(input) : null;
+						// Avoid an infinite loop for zero-length matches
+						var pos = result.index + (result[0].length || 1);
+
+						result = global ? XRegExp.exec(input, regex, pos) : null;
 					}
 
 				}
