@@ -3,12 +3,11 @@
   "version": "0.0.1",
   "main": "server.js",
   "scripts": {
-    "build": "true",
+    "build": "cp -pr src dist",
     "start": "node server.js"
   },
-  "dependencies": {},
-  "engines": {
-    "node": "14"
+  "dependencies": {
+    "xregexp": "^5.1.1"
   },
   "repository": {
     "url": "https://www.github.com/fileformat/regexplanet-xregexp"

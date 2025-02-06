@@ -4,7 +4,14 @@ set -o errexit
 set -o pipefail
 set -o nounset
 
-docker build -t regexplanet-xregexp .
+docker build \
+	--build-arg COMMIT=$(git rev-parse --short HEAD) \
+	--build-arg LASTMOD=$(date -u +%Y-%m-%dT%H:%M:%SZ) \
+	--no-cache \
+	--progress plain \
+	--tag regexplanet-xregexp \
+	.
+
 docker run \
 	-it \
 	--publish 4000:4000 \

@@ -4,7 +4,7 @@ var os = require("os");
 var querystring = require('querystring');
 var util = require("util");
 var url = require("url");
-var XRegExp = require('./xregexp-all.js');
+var XRegExp = require('xregexp');
 
 function h(unsafe)
 {
@@ -435,7 +435,7 @@ function serveTest(query, response)
 	response.end();
 }
 
-var port = Number(process.env.PORT || process.env.VCAP_APP_PORT || 8888);
+var port = Number(process.env.PORT || process.env.VCAP_APP_PORT || 4000);
 
 http.createServer(function (request, response)
 	{
@@ -470,7 +470,9 @@ http.createServer(function (request, response)
         }
 		else if (parsedUrl.pathname == '/' || parsedUrl.pathname.lastIndexOf('/index.', 0) === 0 || parsedUrl.pathname.lastIndexOf('/default.', 0) === 0)
 		{
-			redirect(response, "http://www.regexplanet.com/advanced/xregexp/index.html");
+			response.writeHead(404, { "Content-Type": "text/plain" });
+			response.write(`Running XRegExp ${XRegExp.version}`);
+			response.end();
 		}
 		else
 		{
