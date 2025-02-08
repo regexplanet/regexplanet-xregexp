@@ -1,9 +1,10 @@
-name: build
+name: deploy
 
 on:
   push:
     branches:
     - main
+
   workflow_dispatch:
 
 # Environment variables available to all jobs and steps in this workflow
@@ -14,25 +15,26 @@ env:
   RUN_SERVICE: ${{ secrets.RUN_SERVICE }}
 
 jobs:
-  setup-build-deploy:
-    name: Setup, Build, and Deploy
+  deploy:
+    name: Deploy to CloudRun
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v1
+        uses: actions/checkout@v4
+
+      - name: gcloud auth
+        id: 'auth'
+        uses: 'google-github-actions/auth@v2'
+        with:
+          credentials_json: '${{ secrets.GCP_SA_KEY }}'
 
       # Setup gcloud CLI
-      - uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
-        with:
-          version: '275.0.0'
-          service_account_email: ${{ secrets.GCP_SA_EMAIL }}
-          service_account_key: ${{ secrets.GCP_SA_KEY }}
+      - name: gcloud setup
+        uses: google-github-actions/setup-gcloud@v2
 
-      # Configure gcloud CLI
-      - name: gcloud Set up
-        run: |
-          gcloud config set project ${RUN_PROJECT}
+      - name: gcloud docker-auth
+        run: gcloud auth configure-docker
 
       # Build and push image to Google Container Registry
       - name: Build
@@ -40,7 +42,8 @@ jobs:
           docker build \
             --build-arg COMMIT=${GITHUB_SHA:0:7} \
             --build-arg LASTMOD=$(date -u +%Y-%m-%dT%H:%M:%SZ) \
-            --tag gcr.io/${RUN_PROJECT}/${RUN_SERVICE}:$GITHUB_SHA .
+            --tag gcr.io/${RUN_PROJECT}/${RUN_SERVICE}:$GITHUB_SHA \
+            .
 
       - name: GCloud auth to docker
         run: |
